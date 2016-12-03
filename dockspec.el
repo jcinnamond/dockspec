@@ -9,8 +9,7 @@
 ;;
 ;; Run rspec (or in theory any test framework?) via a docker container.
 ;;
-;; It uses docker compose to run a container, with the current
-;; codebase mounted.
+;; See README.md for more details.
 
 ;;; License:
 
@@ -53,8 +52,8 @@
   :type 'string
   :group 'dockspec)
 
-(defcustom dockspec-docker-container "test"
-  "The name of the container to run. This must exist in the compose file."
+(defcustom dockspec-service-name "test"
+  "The name of the service to run. This must exist in the compose file."
   :type 'string
   :group 'dockspec)
 
@@ -107,7 +106,7 @@
 		     dockspec-docker-command
 		     dockspec-run-command
 		     dockspec-run-flags
-		     dockspec-docker-container
+		     dockspec-service-name
 		     dockspec-test-command
 		     path))))
 
