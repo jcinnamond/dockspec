@@ -76,8 +76,11 @@
 (define-key dockspec-prefix-keymap (kbd "v") 'dockspec-run-current-file)
 (define-key dockspec-prefix-keymap (kbd "s") 'dockspec-run-current-line)
 (define-key dockspec-prefix-keymap (kbd "a") 'dockspec-run-all)
+(define-key dockspec-prefix-keymap (kbd "r") 'dockspec-rerun)
 (defvar dockspec-keymap (make-sparse-keymap))
 (define-key dockspec-keymap dockspec-key-command-prefix dockspec-prefix-keymap)
+
+(defvar dockspec--last-command nil)
 
 (defun dockspec--project-root ()
   (if (bound-and-true-p dockspec-project-root)
@@ -101,14 +104,22 @@
   (file-relative-name buffer-file-name (dockspec--project-root)))
 
 (defun dockspec--run (path)
+  (let ((command (dockspec--build-command path)))
+    (dockspec--run-command command)
+    (setq dockspec--last-command command)))
+
+(defun dockspec--run-command (command)
   (let ((default-directory (dockspec--project-root)))
-    (compile (format "%s %s %s %s %s %s"
-		     dockspec-docker-command
-		     dockspec-run-command
-		     dockspec-run-flags
-		     dockspec-service-name
-		     dockspec-test-command
-		     path))))
+    (compile command)))
+
+(defun dockspec--build-command (path)
+  (format "%s %s %s %s %s %s"
+	  dockspec-docker-command
+	  dockspec-run-command
+	  dockspec-run-flags
+	  dockspec-service-name
+	  dockspec-test-command
+	  path))
 
 (defun dockspec-run-current-file ()
   (interactive)
@@ -121,6 +132,12 @@
 (defun dockspec-run-all ()
   (interactive)
   (dockspec--run ""))
+
+(defun dockspec-rerun ()
+  (interactive)
+  (if (bound-and-true-p dockspec--last-command)
+      (dockspec--run-command dockspec--last-command)
+    (error "Dockspec has not been run yet")))
 
 (define-minor-mode dockspec
   "Run tests in a docker container"
