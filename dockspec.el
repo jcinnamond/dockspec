@@ -3,11 +3,11 @@
 ;; Copyright 2016 John Cinnamond
 
 ;; Author: John Cinnamond
-;; Version: 1.0.0
+;; Version: 2.0.0
 
 ;;; Commentary:
 ;;
-;; Run rspec (or in theory any test framework?) via a docker container.
+;; Run rspec (or in theory any test framework?) using dockrun.
 ;;
 ;; See README.md for more details.
 
@@ -37,27 +37,12 @@
   "Minor mode for running tests using docker containers."
   :group 'languages)
 
-(defcustom dockspec-docker-command "docker-compose"
+(defcustom dockspec-dockrun-command "dockrun client"
   "The name of the docker-compose executable."
   :type 'string
   :group 'dockspec)
 
-(defcustom dockspec-run-command "run"
-  "The command to pass to docker-compose. You shouldn't need to change this."
-  :type 'string
-  :group 'dockspec)
-
-(defcustom dockspec-run-flags "--rm"
-  "Arguments to pass to the run command."
-  :type 'string
-  :group 'dockspec)
-
-(defcustom dockspec-service-name "test"
-  "The name of the service to run. This must exist in the compose file."
-  :type 'string
-  :group 'dockspec)
-
-(defcustom dockspec-test-command "rspec"
+(defcustom dockspec-test-command "spring rspec"
   "The command used to run the tests. This will be run inside the docker container."
   :type 'string
   :group 'dockspec)
@@ -113,11 +98,8 @@
     (compile command)))
 
 (defun dockspec--build-command (path)
-  (format "%s %s %s %s %s %s"
-	  dockspec-docker-command
-	  dockspec-run-command
-	  dockspec-run-flags
-	  dockspec-service-name
+  (format "%s %s %s"
+	  dockspec-dockrun-command
 	  dockspec-test-command
 	  path))
 
